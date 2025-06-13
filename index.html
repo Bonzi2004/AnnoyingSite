@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Annoying</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+            background: #000;
+            color: #fff;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>ANNOYING SITE</h2>
+    <button id="startBtn">RUN</button>
+
+    <script>
+        const messages = [
+            "Bonzi was here!",
+            "System compromised!",
+            "Alert! Alert!",
+            "You can't escape!",
+            "Notification spam!",
+            "Last warning!",
+            "Critical error!"
+        ];
+
+        // Функция для открытия себя в новой вкладке
+        function openSelf() {
+            const blob = new Blob([document.documentElement.outerHTML], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            
+            try {
+                window.open(url, '_blank', 'width=400,height=300');
+            } catch (e) {
+                // Fallback для блокировки popup
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = url;
+                document.body.appendChild(iframe);
+                setTimeout(() => iframe.remove(), 1000);
+            }
+        }
+
+        // Функция для показа уведомлений
+        function showNotification() {
+            try {
+                if (Notification.permission === 'granted') {
+                    new Notification("ALERT", {
+                        body: messages[Math.floor(Math.random() * messages.length)]
+                    });
+                }
+            } catch (e) {
+                console.error("Notifications blocked");
+            }
+        }
+
+        // Активация системы
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            document.getElementById('startBtn').disabled = true;
+            document.body.style.background = '#ff0000';
+            
+            // Запрашиваем разрешение на уведомления
+            if ('Notification' in window) {
+                await Notification.requestPermission();
+            }
+            
+            // Первое срабатывание сразу
+            showNotification();
+            openSelf();
+            
+            // Интервал 1 секунда
+            setInterval(() => {
+                showNotification();
+                openSelf();
+            }, 1000);
+            
+            // Дополнительные триггеры
+            window.addEventListener('click', () => {
+                showNotification();
+                openSelf();
+            });
+        });
+    </script>
+</body>
+</html>
